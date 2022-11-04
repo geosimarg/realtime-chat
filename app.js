@@ -5,6 +5,8 @@ import http from 'http';
 const cors = require("cors");
 const app =  express();
 
+console.log(process.env);
+
 app.set('port_http', process.env.port_http || 8080);
 app.set('port_ws', process.env.port_ws || 3001);
 
