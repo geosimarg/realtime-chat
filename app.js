@@ -9,8 +9,8 @@ app.set('http_port', process.env.http_port || 8080);
 app.set('http_port_public', process.env.KUBERNETES_PORT_443_TCP_PORT || process.env.http_port_public || app.get('http_port'));
 app.set('http_host', process.env.http_host || process.env.RENDER_EXTERNAL_URL || 'localhost');
 
-app.use(cors());
 app.use(express.static(path.join(__dirname, 'public/assets')));
+app.use(cors());
 app.set('views', path.join(__dirname, 'public/views'));
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
@@ -21,17 +21,7 @@ const corsWhitelist = [
     /http(|s)\:\/\/(|[a-z0-9\-]+\.)livyen\.com(|\.br)(|\:)(|[0-9])+$/gi
 ];
 
-const server = http.createServer(app, {
-    cors: {
-        origin: function (origin, callback) {
-            if (whitelist.indexOf(origin) !== -1) {
-              callback(null, true)
-            } else {
-              callback(new Error('Not allowed by CORS'))
-            }
-        }
-    }
-}).listen(app.get('http_port'), function() {
+const server = http.createServer(app, cors()).listen(app.get('http_port'), function() {
     console.log("Express server listen on port ".concat(app.get('http_port')));
 });
 
