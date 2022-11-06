@@ -1,10 +1,10 @@
 const nicknamePlace = $('#nickname');
 const messagePlace = $('#message');
-const message = $('#chat');
+const message = $('#chat-input');
 
 let author = null;
 
-var socket = io('http://localhost:8080');
+var socket = io(host);
 
 function RenderMessage(m) {
     const msgLine = `<div><strong>${m.author}:&nbsp;</strong>${m.message}</div>`;
@@ -36,6 +36,9 @@ $('#btn-nickname').on('click', () => {
         socket.emit('set-nickname', {
             data: author
         });
+        $('#set-nickname').slideUp(() => {
+            $('#chat-container').slideDown();
+        });
     }
 });
 
@@ -58,7 +61,7 @@ $('#btn-chat').on('click', () => {
     PreSend();
 });
 
-$('#chat').keyup((e) => {
+$('#chat-input').keyup((e) => {
     if(e.keyCode == 13) {
         PreSend();
     }

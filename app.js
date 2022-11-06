@@ -5,10 +5,8 @@ import http from 'http';
 const cors = require("cors");
 const app =  express();
 
-console.log(process.env);
-
-app.set('port_http', process.env.port_http || 8080);
-app.set('port_ws', process.env.port_ws || 3001);
+app.set('http_port', process.env.http_port || 8080);
+app.set('http_host', process.env.http_host || process.env.RENDER_EXTERNAL_URL || 'localhost');
 
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'public/assets')));
@@ -18,10 +16,10 @@ app.set('view engine', 'html');
 
 const server = http.createServer(app, {
     cors: {
-        origin: "http://localhost:8080"
+        origin: app.get('http_host')
     }
-}).listen(app.get('port_http'), function() {
-    console.log("Express server listen on port ".concat(app.get('port_http')));
+}).listen(app.get('http_port'), function() {
+    console.log("Express server listen on port ".concat(app.get('http_port')));
 });
 
 const io = require('socket.io')(server);
@@ -70,5 +68,9 @@ io.on('connection', (socket) => {
 
 
 app.get('/', (req, res) => {
-    res.render('index.html');
+    res.render('index.html', {host: app.get('http_host'), port: app.get('http_port')});
+});
+
+app.get('/healthz', (req, res) => {
+    res.sendStatus(200);
 });

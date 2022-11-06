@@ -44,3 +44,11 @@ button {
     border: 1px solid #ddd;
     padding: 20px;
 }
+
+.btn {
+    cursor: pointer;
+}
+
+#chat-container {
+    display: none;
+}

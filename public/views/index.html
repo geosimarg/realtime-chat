@@ -7,19 +7,23 @@
     <title>Chat</title>
     <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.3/socket.io.min.js" integrity="sha512-GtM/5c/Ie0lStj6QwEG0HkpMQuGr9vrOAgFD4nNmImviyZvsJxN7TYU7b+R7Kthob0zFBUpuxfl3R3Mn1qekTw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://github.com/mde/ejs/releases/download/v3.1.8/ejs.min.js"></script>
+    <script>
+        const host="<%= host.concat(':', port) %>";
+    </script>
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-    <h1>Chat with nodeJs</h1>
-    <p>
-        <input type="text" id="nickname">
-        <button id="btn-nickname">Set nickname</button>
-    </p>
+    <h1>Real Time Chat</h1>
     <div class="messages" id="messages"></div>
-    <p>
-        <input type="text" id="chat">
-        <button id="btn-chat">Send</button>
-    </p>
+    <div id="set-nickname">
+        <input type="text" id="nickname">
+        <button class="btn" id="btn-nickname">Set nickname</button>
+    </div>
+    <div id="chat-container">
+        <input type="text" id="chat-input">
+        <button class="btn" id="btn-chat">Send</button>
+    </div>
     <script type="text/javascript" src="/js/script.js"></script>
 </body>
 </html>
