@@ -5,6 +5,7 @@ import http from 'http';
 const cors = require("cors");
 const app =  express();
 
+app.set('http_port_public', process.env.KUBERNETES_PORT_443_TCP_PORT || process.env.http_port_public || 80);
 app.set('http_port', process.env.http_port || 8080);
 app.set('http_host', process.env.http_host || process.env.RENDER_EXTERNAL_URL || 'localhost');
 
@@ -16,7 +17,7 @@ app.set('view engine', 'html');
 
 const server = http.createServer(app, {
     cors: {
-        origin: app.get('http_host')
+        origin: app.get('http_port_public')
     }
 }).listen(app.get('http_port'), function() {
     console.log("Express server listen on port ".concat(app.get('http_port')));
@@ -68,7 +69,7 @@ io.on('connection', (socket) => {
 
 
 app.get('/', (req, res) => {
-    res.render('index.html', {host: app.get('http_host'), port: app.get('http_port')});
+    res.render('index.html', {host: app.get('http_host'), port: app.get('http_port_public')});
 });
 
 app.get('/healthz', (req, res) => {
