@@ -21,7 +21,14 @@ const corsWhitelist = [
     /http(|s)\:\/\/(|[a-z0-9\-]+\.)livyen\.com(|\.br)(|\:)(|[0-9])+$/gi
 ];
 
-const server = http.createServer(app, cors()).listen(app.get('http_port'), function() {
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT,DELETE");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requeseted-With, Content-Type, Accept, Authorization");
+    next();
+});
+
+const server = http.createServer(app).listen(app.get('http_port'), function() {
     console.log("Express server listen on port ".concat(app.get('http_port')));
 });
 
