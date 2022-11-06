@@ -5,7 +5,7 @@ import http from 'http';
 const cors = require("cors");
 const app =  express();
 
-app.set('http_port', process.env.http_port || 8080);
+app.set('http_port', process.env.PORT || process.env.http_port || 8080);
 app.set('http_host', process.env.http_host || process.env.RENDER_EXTERNAL_URL || 'localhost');
 
 app.use(cors());
