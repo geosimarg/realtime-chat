@@ -5,8 +5,8 @@ import http from 'http';
 const cors = require("cors");
 const app =  express();
 
-app.set('http_port_public', process.env.KUBERNETES_PORT_443_TCP_PORT || process.env.http_port_public || 80);
 app.set('http_port', process.env.http_port || 8080);
+app.set('http_port_public', process.env.KUBERNETES_PORT_443_TCP_PORT || process.env.http_port_public || app.get('http_port'));
 app.set('http_host', process.env.http_host || process.env.RENDER_EXTERNAL_URL || 'localhost');
 
 app.use(cors());
@@ -15,9 +15,21 @@ app.set('views', path.join(__dirname, 'public/views'));
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
 
+const corsWhitelist = [
+    'http://localhost:'.concat(app.get('http_port')),
+    'https://realtime-chat.onrender.com:443',
+    'https://ws-chat.livyen.com.br:443'
+];
+
 const server = http.createServer(app, {
     cors: {
-        origin: app.get('http_port_public')
+        origin: function (origin, callback) {
+            if (whitelist.indexOf(origin) !== -1) {
+              callback(null, true)
+            } else {
+              callback(new Error('Not allowed by CORS'))
+            }
+        }
     }
 }).listen(app.get('http_port'), function() {
     console.log("Express server listen on port ".concat(app.get('http_port')));
