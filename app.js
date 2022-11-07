@@ -88,7 +88,7 @@ io.on('connection', (socket) => {
 
     socket.on('subscribe', (room, callback) => {
         if (IoSubscription(socket, room)) {
-            callback('joined');
+            if (typeof callback === "function") callback('joined');
         }
     });
 
@@ -101,13 +101,13 @@ io.on('connection', (socket) => {
         console.log('set-nickname '.concat(data.data, ' to ', socket.id));
         messages.add(data);
         io.sockets.in(data.room).emit('joinned-user', data);
-        callback('nickname-setted');
+        if (typeof callback === "function") callback('nickname-setted');
     });
 
     socket.on('message', (mesage, callback) => {
         console.log(mesage);
         messages.add(mesage);
-        callback(mesage);
+        if (typeof callback === "function") callback(mesage);
         io.to(mesage.room).emit('received-message', mesage);
     });
 });
