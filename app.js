@@ -75,18 +75,21 @@ function IoConnection(person) {
 }
 
 function IoSubscription(socket, room) {
-    console.log('joining room', room);
+    console.log(socket.id.concat(' joined at room ', room));
     socket.join(room);
     const previousMessages = messages.allFromRoom(room);
-    console.log({'previous-message':previousMessages});
+    console.log({'previous-message' : previousMessages});
     io.sockets.in(room).emit('previous-message', previousMessages);
+    return true;
 }
 
 io.on('connection', (socket) => {
     IoConnection(socket);
 
-    socket.on('subscribe', function(room) {
-        IoSubscription(socket, room);
+    socket.on('subscribe', (room, callback) => {
+        if (IoSubscription(socket, room)) {
+            callback('joined');
+        }
     });
 
     socket.on('unsubscribe', function(room) {  
@@ -94,17 +97,18 @@ io.on('connection', (socket) => {
         socket.leave(room); 
     });
 
-    socket.on('set-nickname', function(data) {
+    socket.on('set-nickname', (data, callback) => {
         console.log('set-nickname '.concat(data.data, ' to ', socket.id));
         messages.add(data);
         io.sockets.in(data.room).emit('joinned-user', data);
+        callback('nickname-setted');
     });
 
-    socket.on('message', (mesage) => {
+    socket.on('message', (mesage, callback) => {
         console.log(mesage);
         messages.add(mesage);
-        // socket.broadcast.emit('received-message', mesage);
-        io.sockets.in(mesage.room).emit('received-message', mesage);
+        callback(mesage);
+        io.to(mesage.room).emit('received-message', mesage);
     });
 });
 
