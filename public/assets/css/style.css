@@ -11,7 +11,7 @@ body {
 
 #chat {
     height: 100%;
-    display: flex;
+    display: none;
     justify-content: center;
     align-items: center;
     flex-direction: column;

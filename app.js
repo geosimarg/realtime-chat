@@ -41,6 +41,15 @@ const messages = {
     },
     all() {
         return this._all;
+    },
+    allFromRoom(r) {
+        const ret = this._all.filter(m => {
+            if (m.room == r) {
+                return m;
+            }
+        });
+
+        return ret;
     }
 };
 
@@ -60,22 +69,44 @@ const audience = {
 
 function IoConnection(person) {
     console.log(`New connection socket.id: ${person.id}`);
-    person.emit('socket-id', {socketId:person.id});
-    const previousMessages = messages.all();
+    person.emit('socket-id', {
+        socketId: person.id
+    });
+}
+
+function IoSubscription(socket, room) {
+    console.log('joining room', room);
+    socket.join(room);
+    const previousMessages = messages.allFromRoom(room);
     console.log({'previous-message':previousMessages});
-    person.emit('previous-message', previousMessages);
+    io.sockets.in(room).emit('previous-message', previousMessages);
 }
 
 io.on('connection', (socket) => {
     IoConnection(socket);
 
+    socket.on('subscribe', function(room) {
+        IoSubscription(socket, room);
+    });
+
+    socket.on('unsubscribe', function(room) {  
+        console.log('leaving room', room);
+        socket.leave(room); 
+    });
+
+    socket.on('set-nickname', function(data) {
+        console.log('set-nickname '.concat(data.data, ' to ', socket.id));
+        messages.add(data);
+        io.sockets.in(data.room).emit('joinned-user', data);
+    });
+
     socket.on('message', (mesage) => {
         console.log(mesage);
         messages.add(mesage);
-        socket.broadcast.emit('received-message', mesage);
+        // socket.broadcast.emit('received-message', mesage);
+        io.sockets.in(mesage.room).emit('received-message', mesage);
     });
 });
-
 
 app.get('/', (req, res) => {
     res.render('index.html', {host: app.get('http_host'), port: app.get('http_port_public')});

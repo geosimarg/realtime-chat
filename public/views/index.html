@@ -15,14 +15,20 @@
 </head>
 <body>
     <h1>Real Time Chat</h1>
-    <div class="messages" id="messages"></div>
-    <div id="set-nickname">
-        <input type="text" id="nickname">
-        <button class="btn" id="btn-nickname">Set nickname</button>
+    <div id="selectRoom">
+        <input id="select-room" type="text">
+        <button class="btn" id="select-room-btn">Set ROOM</button>
     </div>
-    <div id="chat-container">
-        <input type="text" id="chat-input">
-        <button class="btn" id="btn-chat">Send</button>
+    <div id="chat">
+        <div class="messages" id="messages"></div>
+        <div id="set-nickname">
+            <input type="text" id="nickname">
+            <button class="btn" id="btn-nickname">Set nickname</button>
+        </div>
+        <div id="chat-container">
+            <input type="text" id="chat-input">
+            <button class="btn" id="btn-chat">Send</button>
+        </div>
     </div>
     <script type="text/javascript" src="/js/script.js"></script>
 </body>
