@@ -16,7 +16,7 @@ app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
 
 const corsWhitelist = [
-    'http://localhost:'.concat(app.get('http_port')),
+    /http(|s)\:\/\/localhost(|\:[0-9]{2,6})$/,
     'https://realtime-chat.onrender.com',
     /http(|s)\:\/\/(|[a-z0-9\_\-]+\.)livyen\.com(|\.br)(|\:[0-9]{2,6})$/
 ];
