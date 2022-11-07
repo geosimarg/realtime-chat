@@ -8,95 +8,73 @@ let author = null;
 let room = null;
 let uid = null;
 
-var socket = io(host);
+const livyenSocket = new LivyenSocket({
+    host: 'https://livyen-ws-chat1.glitch.me',
+    room: 'sala1',
+    nickname: 'Ramy Soeg'
+});
 
 function RenderMessage(m) {
     const msgLine = `<div><strong>${m.author}:&nbsp;</strong>${m.message}</div>`;
     $("#messages").append(msgLine);
 }
 
-function SetROOMName(n) {
-    room = n;
-    socket.emit("subscribe", n);
-    return true;
-}
-
-function SubmitMessage(m) {
-    socket.emit("message", m);
-
-    RenderMessage(m);
-}
-
-function PreSend() {
-    if (author.length > 0 && message.val().length > 0) {
-        const id = uid.concat(".", Date.now().toString());
-        const messageObject = {
-            id,
-            room,
-            author,
-            message: message.val()
-        };
-
-        messages.push(messageObject);
-
-        SubmitMessage(messageObject);
-        message.val("");
+function SendMessage() {
+    const nMessage = message.val();
+    if (livyenSocket.author && nMessage.length > 0) {
+        return livyenSocket.SendMessage(nMessage).then(data => {
+            console.log(data);
+            message.val("");
+            RenderMessage(data);
+            return true;
+        });
     }
     return false;
 }
 
-$("#select-room-btn").on("click", () => {
+/*$("#select-room-btn").on("click", () => {
     const roomName = $("#select-room").val();
     if (roomName && roomName.length > 0) {
-        if (SetROOMName(roomName)) {
+        livyenSocket.JoinRoom(roomName).then(() => {
+            room = roomName;
             $("#select-room").val("");
             $("#selectRoom").slideUp(() => {
                 $("#chat").slideDown();
             });
-        }
+        });
     }
 });
 
 $("#btn-nickname").on("click", () => {
     if (nicknamePlace.val().length > 0) {
         author = nicknamePlace.val();
-        socket.emit("set-nickname", {
-            room,
-            data: author,
-            message: 'join'
-        });
+
+        livyenSocket.SetNickName(author);
+
         $("#set-nickname").slideUp(() => {
             $("#chat-container").slideDown();
         });
     }
-});
+});*/
 
-socket.on("socket-id", data => {
-    console.log(data);
-    uid = data.socketId;
-});
-
-socket.on("received-message", (data) => {
+livyenSocket.on("received-message", (data) => {
     console.log("received-message");
-    const found = messages.find(m => m.id == data.id);
+    const found = livyenSocket.messages.find(m => m.id == data.id);
     if (!found) {
-        messages.push(data);
         RenderMessage(data);
     }
 });
 
-socket.on("previous-message", (data) => {
-    for (const i in data) {
-        RenderMessage(data[i]);
-    }
+livyenSocket.on('id-received', function(data) {
+    console.log('id-received', data);
 });
 
 $("#btn-chat").on("click", () => {
-    PreSend();
+    SendMessage();
 });
 
 $("#chat-input").keyup((e) => {
     if(e.keyCode == 13) {
-        PreSend();
+        SendMessage();
     }
 });

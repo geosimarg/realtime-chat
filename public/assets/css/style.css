@@ -11,7 +11,7 @@ body {
 
 #chat {
     height: 100%;
-    display: none;
+    display: block;
     justify-content: center;
     align-items: center;
     flex-direction: column;
@@ -50,5 +50,9 @@ button {
 }
 
 #chat-container {
+    display: block;
+}
+
+#selectRoom, #set-nickname {
     display: none;
 }
