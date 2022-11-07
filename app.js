@@ -18,21 +18,21 @@ app.set('view engine', 'html');
 const corsWhitelist = [
     'http://localhost:'.concat(app.get('http_port')),
     'https://realtime-chat.onrender.com',
-    /http(|s)\:\/\/(|[a-z0-9\-]+\.)livyen\.com(|\.br)(|\:)(|[0-9])+$/gi
+    /http(|s)\:\/\/(|[a-z0-9\_\-]+\.)livyen\.com(|\.br)(|\:[0-9]{2,6})$/
 ];
 
-app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT,DELETE");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requeseted-With, Content-Type, Accept, Authorization");
-    next();
-});
-
-const server = http.createServer(app).listen(app.get('http_port'), function() {
+const httpServer = http.createServer(app).listen(app.get('http_port'), function() {
     console.log("Express server listen on port ".concat(app.get('http_port')));
 });
 
-const io = require('socket.io')(server);
+const io = require('socket.io')(httpServer, {
+    cors: {
+        allowedHeaders: ['Origin', 'X-Requeseted-With', 'Content-Type', 'Accept', 'Authorization'],
+        origin: corsWhitelist,
+        credentials: true,
+        withCredentials: true
+    }
+});
 
 const messages = {
     _all: [],
